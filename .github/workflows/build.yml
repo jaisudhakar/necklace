@@ -1,0 +1,31 @@
+name: Build static site
+on:
+  workflow_dispatch:
+
+env:
+  # The folder on your server where the site will live (https://onemandeveloper.com/sites/necklace/).
+  # The build reads this directly (next.config.ts + lib/basePath.ts); leave empty for a domain root.
+  BASE_PATH: /sites/necklace
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Also writes out/.htaccess (HTTPS, 404 page, .wasm type, compression, caching)
+      - run: npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lumi-lobes-site
+          path: out
+          include-hidden-files: true
+          retention-days: 7

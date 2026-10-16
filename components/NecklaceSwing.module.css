@@ -1,0 +1,112 @@
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.stage:focus-visible {
+  outline-offset: -6px;
+  border-radius: var(--radius);
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+.zoom {
+  width: 100%;
+  height: 100%;
+  container-type: size;
+  display: grid;
+  place-items: start center;
+  transition: transform 0.6s var(--ease-spring);
+  transform-origin: 50% 20%;
+}
+
+/* Largest box with the artwork's aspect ratio that fits the stage */
+.frame {
+  position: relative;
+  width: min(100cqw, 100cqh * var(--ratio));
+  aspect-ratio: var(--ratio);
+}
+
+/* Same 300-unit coordinate space as the artwork, so the neck lines up with the chain ends */
+.bust {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 2;
+  /* No CSS filter here: a filter would clip the shoulders that extend past the frame */
+  overflow: visible;
+}
+
+.swing {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  transition: filter 0.6s var(--ease-out);
+}
+
+/* A light sweep across the metal and stones */
+.glint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.65) 48%, transparent 58%);
+  mix-blend-mode: soft-light;
+  background-size: 260% 100%;
+  animation: glint 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glint {
+  0%,
+  45% {
+    background-position: 130% 0;
+  }
+  100% {
+    background-position: -60% 0;
+  }
+}
+
+.twinkle {
+  position: absolute;
+  color: #fff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  animation: twinkle 2.8s ease-in-out infinite;
+}
+
+.t1 {
+  top: 30%;
+  left: 24%;
+  font-size: 22px;
+}
+
+.t2 {
+  top: 50%;
+  right: 24%;
+  font-size: 16px;
+  animation-delay: 0.9s;
+}
+
+.t3 {
+  bottom: 18%;
+  left: 38%;
+  font-size: 14px;
+  animation-delay: 1.7s;
+}
