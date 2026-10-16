@@ -81,7 +81,7 @@ export default function TryOnClient() {
     const img = new Image();
     img.src = artUri(product.design, { metal, single: true });
     const geo = necklaceGeometry(product.design);
-    specRef.current = { img, ratio: geo.ratio, ends: geo.ends, size };
+    specRef.current = { img, style: product.design.style, ratio: geo.ratio, ends: geo.ends, size };
   }, [product, metal, size]);
 
   const stopCamera = () => {

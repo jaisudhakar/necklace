@@ -24,7 +24,7 @@ export const PHOTO_MODEL: SampleModel = {
   h: 739,
   alt: "Sample model",
   credit: "Model photo used with permission",
-  neck: { x: 197.6, y: 356.7, width: 99, angle: 0.079 },
+  neck: { x: 192.9, y: 360.8, left: 36.8, right: 68, angle: 0.079 },
 };
 
 /** Illustrated fallback, used if the photo fails to load. */
@@ -33,5 +33,5 @@ export const ILLUSTRATED_MODEL: SampleModel = {
   w: 900,
   h: 1000,
   alt: "Illustrated sample model",
-  neck: { x: 450, y: 748, width: 128, angle: 0 },
+  neck: { x: 450, y: 748, left: 64, right: 64, angle: 0 },
 };

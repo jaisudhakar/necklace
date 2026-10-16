@@ -5,6 +5,7 @@ import { MOODS, STYLES, type Design, type Mood } from "@/lib/design";
 import { artUri, necklaceGeometry } from "@/lib/necklaceArt";
 import { products, type Product } from "@/lib/products";
 import { PHOTO_MODEL as MODEL } from "@/lib/sampleModels";
+import { STYLE_FIT } from "@/lib/tryon";
 import styles from "./home.module.css";
 
 const necklaces = products;
@@ -78,7 +79,10 @@ export function StyleTiles() {
 }
 
 // Base of the neck on the sample model photo (pre-measured by the try-on models).
-const NECK = MODEL.neck ?? { x: MODEL.w / 2, y: MODEL.h * 0.48, width: MODEL.w * 0.24, angle: 0 };
+const NECK = MODEL.neck ?? { x: MODEL.w / 2, y: MODEL.h * 0.48, left: MODEL.w * 0.12, right: MODEL.w * 0.12, angle: 0 };
+// The promo pieces are plain images, so they span the two sides of the neck evenly.
+const NECK_W = NECK.left + NECK.right;
+const NECK_MID = NECK.x + (NECK.right - NECK.left) / 2;
 const PROMO_DESIGNS: Design[] = [
   { style: "pendant", motif: "evil-eye", palette: "sky" },
   { style: "locket", motif: "flower", palette: "blush" },
@@ -108,8 +112,10 @@ export function TryOnPromo() {
           {PROMO_DESIGNS.map((d, i) => {
             const geo = necklaceGeometry(d);
             // Chain ends span the neck, so the artwork is neck width ÷ the ends' share of its width.
-            const wPx = NECK.width / (geo.ends[1].x - geo.ends[0].x);
+            const fit = STYLE_FIT[d.style];
+            const wPx = (NECK_W * (fit?.width ?? 1)) / (geo.ends[1].x - geo.ends[0].x);
             const hPx = wPx / geo.ratio;
+            const y = NECK.y - (fit?.lift ?? 0) * NECK_W;
             return (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -118,8 +124,8 @@ export function TryOnPromo() {
                 alt=""
                 className={styles.promoNecklace}
                 style={{
-                  left: `${((NECK.x - wPx / 2) / MODEL.w) * 100}%`,
-                  top: `${((NECK.y - geo.ends[0].y * hPx) / MODEL.h) * 100}%`,
+                  left: `${((NECK_MID - wPx / 2) / MODEL.w) * 100}%`,
+                  top: `${((y - geo.ends[0].y * hPx) / MODEL.h) * 100}%`,
                   width: `${(wPx / MODEL.w) * 100}%`,
                   transformOrigin: `50% ${geo.ends[0].y * 100}%`,
                   rotate: `${NECK.angle}rad`,

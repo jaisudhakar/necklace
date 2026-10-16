@@ -4,6 +4,7 @@
 
 import type { FaceLandmarker, NormalizedLandmark, PoseLandmarker } from "@mediapipe/tasks-vision";
 import { asset } from "./basePath";
+import type { StyleId } from "./design";
 
 const MODELS = "https://storage.googleapis.com/mediapipe-models";
 /** Hosted models, fetched at runtime: pose (~5.8 MB) and face (~3.6 MB). */
@@ -57,11 +58,15 @@ export async function setMode(t: Trackers, mode: "IMAGE" | "VIDEO") {
 type Pt = { x: number; y: number };
 
 export type Neck = {
-  /** Centre of the necklace's two chain ends (the base of the neck), in source pixels. */
+  /** Front of the throat at the base of the neck (where a pendant hangs), in source pixels. */
   x: number;
   y: number;
-  /** Distance between the chain ends: roughly the neck's width. */
-  width: number;
+  /**
+   * Distance from the front to each side of the neck. They differ when the head
+   * is turned: the far side is foreshortened, the near side shows more of the neck.
+   */
+  left: number;
+  right: number;
   /** Tilt in radians (follows the shoulders and head). */
   angle: number;
 };
@@ -87,12 +92,19 @@ export function neckFromLandmarks(
   let roll = 0;
   let faceH = 0;
   let faceW = 0;
+  // Head turn: where the nose sits between the face edges (0.5 = facing the camera).
+  let turn = 0;
   if (face) {
     faceH = dist(F(10), F(152));
     faceW = dist(F(234), F(454));
     const eL = F(33);
     const eR = F(263);
     roll = Math.atan2(eR.y - eL.y, eR.x - eL.x);
+    const a = F(234);
+    const b = F(454);
+    const n = F(1);
+    const t = ((n.x - a.x) * (b.x - a.x) + (n.y - a.y) * (b.y - a.y)) / (faceW * faceW || 1);
+    turn = Math.max(-0.6, Math.min(0.6, (0.5 - t) * 1.6));
   } else if (pose) {
     // No face mesh: extrapolate the chin from nose and mouth.
     const mouth = mid(Pp(9), Pp(10));
@@ -101,22 +113,33 @@ export function neckFromLandmarks(
   }
   if (!chin) return null;
 
+  // Split the neck width around the throat: a turned head (turn > 0 means the
+  // face points toward the image's left) hides the far side and shows more of the near one.
+  const split = (width: number) => ({ left: (width / 2) * (1 - turn), right: (width / 2) * (1 + turn) });
+
   const shouldersVisible = pose && (pose[11].visibility ?? 1) > 0.5 && (pose[12].visibility ?? 1) > 0.5;
   if (shouldersVisible) {
     const [a, b] = [Pp(11), Pp(12)].sort((p, q) => p.x - q.x);
     const S = dist(a, b);
     const M = mid(a, b);
     const shoulderAngle = Math.atan2(b.y - a.y, b.x - a.x);
+    // The throat sits under the chin; the shoulders only pull it slightly.
     return {
-      x: chin.x + (M.x - chin.x) * 0.25,
-      y: chin.y + (M.y - chin.y) * 0.55,
-      width: S * 0.34,
+      x: chin.x + (M.x - chin.x) * 0.1,
+      y: chin.y + (M.y - chin.y) * 0.62,
+      ...split(S * 0.36),
       angle: shoulderAngle * 0.5 + roll * 0.2,
     };
   }
   if (!faceH) return null;
-  return { x: chin.x, y: chin.y + faceH * 0.22, width: faceW * 0.62, angle: roll * 0.5 };
+  return { x: chin.x, y: chin.y + faceH * 0.26, ...split(faceW * 0.64), angle: roll * 0.5 };
 }
+
+/** How each style sits: chokers hug the neck, collars sit at its base, the rest drape from it. */
+export const STYLE_FIT: Partial<Record<StyleId, { lift: number; width: number }>> = {
+  choker: { lift: 0.42, width: 0.9 },
+  collar: { lift: 0.12, width: 1 },
+};
 
 /** Damped pendulum driven by the neck's sideways acceleration (the pendant swings as you move). */
 export class Pendulum {
@@ -146,28 +169,71 @@ export class Pendulum {
 
 export type DrawSpec = {
   img: HTMLImageElement;
+  style: StyleId;
   /** Artwork width / height, and the two chain ends as 0..1 fractions of the artwork. */
   ratio: number;
   ends: [Pt, Pt];
   size: number;
 };
 
-/** Pixel width of the whole artwork for a given neck (the chain ends span the neck). */
-export const artWidth = (neck: Neck, spec: DrawSpec) => (neck.width / (spec.ends[1].x - spec.ends[0].x)) * spec.size;
+const span = (spec: DrawSpec) => spec.ends[1].x - spec.ends[0].x;
 
-/** Draws the necklace with its chain ends at the sides of the neck. */
+/** Pixel width of the whole artwork for a given neck (the chain ends span the neck). */
+export const artWidth = (neck: Neck, spec: DrawSpec) =>
+  ((neck.left + neck.right) / span(spec)) * spec.size * (STYLE_FIT[spec.style]?.width ?? 1);
+
+let scratch: HTMLCanvasElement | null = null;
+
+/**
+ * Draws the necklace with its chain ends at the sides of the neck. The two
+ * halves are scaled separately so the necklace wraps a turned neck, and the
+ * top of the chain fades out as if it passes behind the neck.
+ */
 export function drawNecklace(ctx: CanvasRenderingContext2D, neck: Neck, spec: DrawSpec, swing: number) {
-  if (!spec.img.complete || !spec.img.naturalWidth) return;
+  const img = spec.img;
+  if (!img.complete || !img.naturalWidth) return;
+  const fit = STYLE_FIT[spec.style];
   const w = artWidth(neck, spec);
   const h = w / spec.ratio;
-  const top = spec.ends[0].y;
+  // Artwork pixels per unit of the 300-wide drawing space.
+  const scale = w / 300;
+  // Half-widths of the artwork on each side of the throat.
+  const wl = w * (neck.left / (neck.left + neck.right));
+  const wr = w - wl;
+
+  // Render into a scratch canvas so the chain's top can be faded independently.
+  scratch ??= document.createElement("canvas");
+  const sw = Math.ceil(w) + 2;
+  const sh = Math.ceil(h) + 2;
+  if (scratch.width < sw || scratch.height < sh) {
+    scratch.width = Math.max(scratch.width, sw);
+    scratch.height = Math.max(scratch.height, sh);
+  }
+  const g = scratch.getContext("2d")!;
+  g.clearRect(0, 0, scratch.width, scratch.height);
+  const iw = img.naturalWidth;
+  const ih = img.naturalHeight;
+  g.drawImage(img, 0, 0, iw / 2, ih, 0, 0, wl, h);
+  g.drawImage(img, iw / 2, 0, iw / 2, ih, wl, 0, wr, h);
+  // Fade out the part of the chain above the neck sides (it goes round the back of the neck).
+  const top = spec.ends[0].y * h;
+  const fadeEnd = top + scale * 26;
+  g.globalCompositeOperation = "destination-out";
+  const grad = g.createLinearGradient(0, 0, 0, fadeEnd);
+  grad.addColorStop(0, "rgba(0,0,0,1)");
+  grad.addColorStop(Math.min(0.95, (top + scale * 4) / fadeEnd), "rgba(0,0,0,0.95)");
+  grad.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = grad;
+  g.fillRect(0, 0, sw, fadeEnd);
+  g.globalCompositeOperation = "source-over";
+
   ctx.save();
-  ctx.translate(neck.x, neck.y);
+  ctx.translate(neck.x, neck.y - (fit?.lift ?? 0) * (neck.left + neck.right));
   // A necklace rests on the chest, so it swings far less than an earring.
   ctx.rotate(neck.angle + swing * 0.35);
   ctx.shadowColor = "rgba(40, 10, 30, 0.35)";
   ctx.shadowBlur = w * 0.02;
   ctx.shadowOffsetY = w * 0.012;
-  ctx.drawImage(spec.img, -0.5 * w, -top * h, w, h);
+  ctx.drawImage(scratch, 0, 0, sw, sh, -wl, -top, sw, sh);
   ctx.restore();
 }
