@@ -3,6 +3,9 @@
 
 import { asset } from "./basePath";
 import {
+  GOLD_MOTIFS,
+  GOLD_PALETTES,
+  isGold,
   MOTIFS,
   PALETTES,
   STYLES,
@@ -39,6 +42,8 @@ export type Product = {
   /** Lower = more popular. Used by "Sort: Trending". */
   trending: number;
   isNew?: boolean;
+  /** Part of the Fine Gold line. */
+  gold?: boolean;
 };
 
 export const CATALOG_SIZE = 1200;
@@ -78,6 +83,12 @@ const MOTIF_PHRASE: Record<MotifId, string> = {
   "evil-eye": "a protective evil-eye charm",
   infinity: "a pavé infinity loop",
   shell: "a ridged seashell",
+  lotus: "a hand-chased lotus",
+  peacock: "a dancing peacock with a fanned tail",
+  paisley: "a traditional mango (paisley) motif",
+  kasu: "a Lakshmi-kasu style coin",
+  solitaire: "a four-prong solitaire",
+  bar: "a sleek engraved bar",
 }
 
 const PALETTE_PHRASE: Record<PaletteId, string> = {
@@ -93,7 +104,32 @@ const PALETTE_PHRASE: Record<PaletteId, string> = {
   coral: "bright coral",
   sage: "calming sage",
   crystal: "ice-clear crystal",
+  polished: "high-polish gold",
+  diamond: "brilliant-cut diamonds",
+  emerald: "Colombian-green emeralds",
+  sapphire: "royal-blue sapphires",
+  kundan: "kundan-set polki stones",
+  onyx: "jet-black onyx",
+  firoza: "firoza turquoise",
+  meenakari: "red meenakari enamel",
 };
+
+/** Extra cost of each Fine Gold stone. */
+const STONE_PRICE: Partial<Record<PaletteId, number>> = {
+  diamond: 260,
+  kundan: 180,
+  ruby: 140,
+  emerald: 140,
+  sapphire: 140,
+  meenakari: 90,
+  firoza: 70,
+  pearl: 60,
+  coral: 60,
+  onyx: 40,
+};
+
+/** Indian bridal and temple styles are 22K; chains are 18K. */
+const KARAT_22: StyleId[] = ["temple", "mangalsutra", "haram", "gold-choker", "bead-mala"];
 
 const CLOSERS = [
   "Light enough to wear all day, every day.",
@@ -107,19 +143,33 @@ const CLOSERS = [
 ];
 
 const BADGES = ["Everyday favorite", "Handmade with love", "Gift pick", "Limited batch"];
+const GOLD_BADGES = ["Trending now", "Hallmarked", "Bridal pick", "Festive favourite"];
+const GOLD_CLOSERS = [
+  "BIS-hallmarked and certified.",
+  "Hand-finished by our goldsmiths.",
+  "Made to be passed down.",
+  "Arrives in a velvet heirloom box.",
+  "Lifetime polishing and repairs included.",
+];
 
 const INCOMPATIBLE: Partial<Record<MotifId, StyleId[]>> = {
   // A pearl motif already *is* the strand's centrepiece.
   pearl: ["pearl-strand"],
 }
 
+const GOLD_ONLY = new Set<MotifId>(["lotus", "peacock", "paisley", "kasu", "solitaire", "bar"]);
+const GOLD_ONLY_STONES = new Set<PaletteId>(["polished", "diamond", "emerald", "sapphire", "kundan", "onyx", "firoza", "meenakari"]);
+
 export function generateCatalog(reserved: Set<string>, startRank: number): Product[] {
   const rand = mulberry32(20261016);
   const combos: Design[] = [];
-  for (const style of Object.keys(STYLES) as StyleId[]) {
-    for (const motif of Object.keys(MOTIFS) as MotifId[]) {
+  const classicStyles = (Object.keys(STYLES) as StyleId[]).filter((s) => !isGold(s));
+  const classicMotifs = (Object.keys(MOTIFS) as MotifId[]).filter((m) => !GOLD_ONLY.has(m));
+  const classicPalettes = (Object.keys(PALETTES) as PaletteId[]).filter((p) => !GOLD_ONLY_STONES.has(p));
+  for (const style of classicStyles) {
+    for (const motif of classicMotifs) {
       if (INCOMPATIBLE[motif]?.includes(style)) continue;
-      for (const palette of Object.keys(PALETTES) as PaletteId[]) {
+      for (const palette of classicPalettes) {
         if (palette === "pearl" && motif === "pearl") continue;
         combos.push({ style, motif, palette });
       }
@@ -164,12 +214,53 @@ export function generateCatalog(reserved: Set<string>, startRank: number): Produ
     });
   }
 
-  // Popularity order is its own shuffle so "Trending" mixes styles nicely.
-  const ranks = out.map((_, i) => i);
-  for (let i = ranks.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [ranks[i], ranks[j]] = [ranks[j], ranks[i]];
+  const all = [...out, ...generateGold(reserved)];
+
+  // Popularity order is its own shuffle so "Trending" mixes styles nicely;
+  // the new Fine Gold line is what's trending, so it leans toward the top.
+  const trend = new Map(all.map((p) => [p, rand() * (isGold(p.design.style) ? 0.55 : 1)]));
+  [...all].sort((a, b) => trend.get(a)! - trend.get(b)!).forEach((p, i) => (p.trending = startRank + i));
+  return all;
+}
+
+/** The Fine Gold line: every gold style × gold motif × stone. */
+function generateGold(reserved: Set<string>): Product[] {
+  const rand = mulberry32(20261101);
+  const out: Product[] = [];
+  for (const style of (Object.keys(STYLES) as StyleId[]).filter(isGold)) {
+    for (const motif of GOLD_MOTIFS) {
+      for (const palette of GOLD_PALETTES) {
+        const design: Design = { style, motif, palette };
+        const st = STYLES[style];
+        const pal = PALETTES[palette];
+        const name = `${pal.name} ${MOTIFS[motif].label} ${st.label}`;
+        const slug = slugify(name);
+        if (reserved.has(slug)) continue;
+        const r = () => rand();
+        const raw = st.base + (STONE_PRICE[palette] ?? 0) + MOTIFS[motif].bump * 12 + Math.floor(r() * 40);
+        const karat = KARAT_22.includes(style) ? "Hallmarked 22K gold" : "Solid 18K gold";
+        const phrase = MOTIF_PHRASE[motif];
+        out.push({
+          slug,
+          name,
+          price: Math.round(raw / 10) * 10 - 1,
+          category: st.category,
+          tone: pal.tone,
+          image: asset(`/art/${slug}.svg`),
+          design,
+          mood: MOTIFS[motif].mood,
+          rating: Math.round((4.5 + r() * 0.5) * 10) / 10,
+          reviews: 6 + Math.floor(r() * r() * 260),
+          badge: r() < 0.3 ? GOLD_BADGES[Math.floor(r() * GOLD_BADGES.length)] : undefined,
+          description: `${phrase[0].toUpperCase()}${phrase.slice(1)} in ${PALETTE_PHRASE[palette]}, on a piece that ${st.blurb}. ${karat}. ${
+            GOLD_CLOSERS[Math.floor(r() * GOLD_CLOSERS.length)]
+          }`,
+          trending: 0,
+          isNew: r() < 0.3,
+          gold: true,
+        });
+      }
+    }
   }
-  out.forEach((p, i) => (p.trending = startRank + ranks[i]));
   return out;
 }

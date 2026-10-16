@@ -1,6 +1,6 @@
 # Lumi Lockets ♥
 
-A static, animated necklace storefront with **1,201 products** and a **virtual try-on**, built with **Next.js 16 (App Router) + React 19** and plain CSS (global tokens + CSS Modules). It is the sister store of [Lumi Lobes](https://github.com/jaisudhakar/lumi-lobes) (earrings) and shares its platform. No UI or animation libraries: every effect is CSS keyframes/transitions plus a little Web Animations API.
+A static, animated necklace storefront with **2,741 products** (including the **1,540-piece Fine Gold line**) and a **virtual try-on**, built with **Next.js 16 (App Router) + React 19** and plain CSS (global tokens + CSS Modules). It is the sister store of [Lumi Lobes](https://github.com/jaisudhakar/lumi-lobes) (earrings) and shares its platform. No UI or animation libraries: every effect is CSS keyframes/transitions plus a little Web Animations API.
 
 ## Getting started
 
@@ -11,7 +11,7 @@ npm run build    # static export to ./out (also writes out/.htaccess)
 npm start        # serve ./out locally
 ```
 
-`predev`/`prebuild` copy the MediaPipe WebAssembly runtime from `node_modules` into `public/mediapipe/` (git-ignored) for the try-on. The build pre-renders ~1,200 product pages and 1,200 artwork files (about 110 MB).
+`predev`/`prebuild` copy the MediaPipe WebAssembly runtime from `node_modules` into `public/mediapipe/` (git-ignored) for the try-on. The build pre-renders ~2,700 product pages and 2,700 artwork files.
 
 The store name and tagline live in `lib/brand.ts`; the developer section in `lib/author.ts`.
 
@@ -27,22 +27,30 @@ The store name and tagline live in `lib/brand.ts`; the developer section in `lib
 
 | Route | What's there |
 | --- | --- |
-| `/` | Hero with a necklace lowered onto a display bust (drag to swing, live metal swap, auto-cycling designs), featured cards, marquee, shop by style, new arrivals carousel, try-on promo on the model, bestsellers by mood, stats, reviews, gift guide, perks, FAQ, newsletter, "Built by" section |
-| `/shop/` | 1,201 necklaces: search, 11 style chips, colour swatches, motif / mood / price filters, 5 sorts, infinite scroll, URL-synced filters |
+| `/` | Hero with a necklace lowered onto a display bust (drag to swing, live metal swap, auto-cycling designs), featured cards, marquee, Fine Gold Edit (velvet showcase of the 10 gold styles), gold lookbook on the model (each look opens in the try-on, layered looks included), shop by style, new arrivals carousel, try-on promo on the model, bestsellers by mood, stats, reviews, gift guide, perks, FAQ, newsletter, "Built by" section |
+| `/shop/` | 2,741 necklaces: search, a Fine Gold chip plus 21 style chips, colour swatches, motif / mood / price filters, 5 sorts, infinite scroll, URL-synced filters |
 | `/product/[slug]/` | Swing viewer on a bust (drag, arrow keys, zoom, fullscreen), metal finish redrawn in gold / silver / rose, quantity, "Try on", related designs |
-| `/try-on/` | Virtual try-on: live camera, uploaded photo or the sample model photo; necklace placed at the neckline, swaying with movement; size + metal controls; snapshot; add to cart |
-| `/collections/` | Lockets, pearl strands, coin & temple, layered, evil eye, chokers, tennis & collars, long chains |
+| `/try-on/` | Virtual try-on: live camera, uploaded photo or the sample model photo; necklace placed at the neckline, swaying with movement; **layer up to three necklaces**; shelves (Trending, Fine Gold, Bridal & Temple, Gold Chains, Everyday Charms); Surprise me; auto-playing lookbook; size + metal controls; snapshot; add the whole look to cart |
+| `/collections/` | Temple & bridal gold, gold chains, mangalsutra & malas, lockets, pearl strands, coin & temple, layered, evil eye, chokers, tennis & collars, long chains |
 | `/cart/` | Line items, gift box toggle, animated totals, empty state (persists in `localStorage`) |
 
 ## Catalog
 
-`lib/catalog.ts` generates 1,200 designs with a fixed seed (server and browser agree exactly), plus one photographed piece, from the taxonomy in `lib/design.ts`:
+`lib/catalog.ts` generates the catalog with fixed seeds (server and browser agree exactly), plus one photographed piece, from the taxonomy in `lib/design.ts`.
+
+**Everyday charms (1,200 designs)**
 
 - **11 styles:** pendants, chokers, lockets, lariats, layered, collars, pearl strands, tennis, station, long/opera chains, coin & temple
 - **18 motifs:** heart, star, moon, sun, blossom, butterfly, bow, pearl, teardrop, leaf, cluster, halo, hexagon, clover, key, evil eye, infinity, seashell
 - **12 colourways** × **3 metals**
 
-`lib/necklaceArt.ts` draws every design as original SVG: each necklace hangs from the two sides of the neck as a bezier chain, and each style builds on that curve (pearls strung by arc length, stones set along it, temple coins fringing it, three layered chains, a velvet choker ribbon, a Y-drop lariat). Cards show the necklace on a display bust and are pre-rendered to `/art/<slug>.svg` by `app/art/[file]/route.ts`.
+**Fine Gold (1,540 designs): every gold style × gold motif × stone**
+
+- **10 gold styles** trending now: rope chain, Cuban link, paperclip, herringbone, figaro (solid 18K); temple necklace, mangalsutra, haram, bridal choker, bead mala (hallmarked 22K)
+- **14 motifs:** lotus, peacock, mango (paisley), kasu coin, solitaire, bar, heart, moon, evil eye, infinity, clover, halo, teardrop, blossom
+- **11 stones:** polished gold, diamond, ruby, emerald, sapphire, pearl, kundan, onyx, firoza, meenakari, coral
+
+`lib/necklaceArt.ts` draws every design as original SVG: each necklace hangs from the two sides of the neck as a bezier chain, and each style builds on that curve (pearls strung by arc length, stones set along it, temple coins fringing it, three layered chains, a velvet choker ribbon, a Y-drop lariat). Fine Gold chains are drawn link by link (rope twists, Cuban links, paperclips, herringbone chevrons, figaro runs, black-bead strands, mango links, gold beads) with a polished-metal gradient and a specular bevel, and shown on a jeweller's velvet neck form. Cards are pre-rendered to `/art/<slug>.svg` by `app/art/[file]/route.ts`.
 
 ## Virtual try-on
 

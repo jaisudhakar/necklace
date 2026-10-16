@@ -394,6 +394,158 @@
     0 0 0 5px var(--purple);
 }
 
+/* Fine Gold picks and the current piece sit on velvet, like their photos */
+.pickGold,
+.currentGold img {
+  background: radial-gradient(90% 90% at 50% 20%, #5a2a35, #1c0910);
+}
+
+.pickGold img,
+.currentGold img {
+  object-fit: cover;
+  padding: 0;
+  border-radius: inherit;
+}
+
+.pickLayered {
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 5px var(--gold);
+}
+
+/* ---------- Layering ---------- */
+
+.layering {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.layerBtn {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  color: var(--purple-strong);
+  background: var(--purple-soft);
+  transition: transform 0.3s var(--ease-spring), opacity 0.2s;
+}
+
+.layerBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.layerBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.layerHint {
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+.layerList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.layerChip {
+  display: grid;
+  grid-template-columns: 54px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 4px 4px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  font-weight: 700;
+  font-size: 0.92rem;
+  animation: fadeUp 0.4s var(--ease-out) both;
+}
+
+.layerChip img {
+  width: 54px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.layerChip button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--ink-soft);
+}
+
+.layerChip button:hover {
+  background: var(--purple-soft);
+}
+
+/* ---------- Shelves & lookbook ---------- */
+
+.shelves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.shelf {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  background: #fff;
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  transition: background 0.2s, color 0.2s;
+}
+
+.shelfOn {
+  color: #fff;
+  background: linear-gradient(135deg, #f0a6c0, var(--purple));
+  box-shadow: none;
+}
+
+.playRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.playBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #6b4a0e;
+  background: linear-gradient(135deg, #fff3cf, #f1cb66);
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.playBtn:hover {
+  transform: translateY(-2px);
+}
+
+.playOn {
+  color: #fff;
+  background: linear-gradient(135deg, #c99228, #7c5410);
+}
+
 @media (max-width: 980px) {
   .layout {
     grid-template-columns: 1fr;

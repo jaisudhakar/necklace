@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { ChevronDown } from "@/components/Icons";
 import { ShopCard } from "@/components/ProductCards";
 import { MOODS, MOTIFS, PALETTES, type Mood, type MotifId, type PaletteId } from "@/lib/design";
-import { categories, products, type Category } from "@/lib/products";
+import { categories, matchesCategory, products, type CategoryFilter } from "@/lib/products";
 import styles from "./shop.module.css";
 
 const sorts = [
@@ -19,15 +19,15 @@ type SortId = (typeof sorts)[number]["id"];
 
 export const PRICE_BANDS = [
   { id: "under-25", label: "Under $25", min: 0, max: 24.99 },
-  { id: "25-35", label: "$25 – $35", min: 25, max: 35 },
-  { id: "35-45", label: "$35 – $45", min: 35.01, max: 45 },
-  { id: "45-plus", label: "$45 and up", min: 45.01, max: Infinity },
+  { id: "25-50", label: "$25 – $50", min: 25, max: 50 },
+  { id: "50-700", label: "$50 – $700", min: 50.01, max: 700 },
+  { id: "700-plus", label: "$700 and up", min: 700.01, max: Infinity },
 ] as const;
 
 type PriceId = (typeof PRICE_BANDS)[number]["id"];
 
 type Filters = {
-  category: "all" | Category;
+  category: CategoryFilter;
   motif: "all" | MotifId;
   color: "all" | PaletteId;
   mood: "all" | Mood;
@@ -120,7 +120,7 @@ export default function ShopClient() {
   const list = useMemo(() => {
     const terms = f.q.toLowerCase().split(/\s+/).filter(Boolean);
     const out = products.filter((p) => {
-      if (f.category !== "all" && p.category !== f.category) return false;
+      if (!matchesCategory(p, f.category)) return false;
       if (f.motif !== "all" && p.design.motif !== f.motif) return false;
       if (f.color !== "all" && p.design.palette !== f.color) return false;
       if (f.mood !== "all" && p.mood !== f.mood) return false;
@@ -180,7 +180,7 @@ export default function ShopClient() {
           </svg>
           <input
             type="search"
-            placeholder="Search lockets, evil eye, pearls…"
+            placeholder="Search temple, cuban, lockets, pearls…"
             value={f.q}
             onChange={(e) => update({ q: e.target.value })}
           />

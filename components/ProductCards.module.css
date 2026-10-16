@@ -253,3 +253,17 @@
   -webkit-mask-image: none;
   mask-image: none;
 }
+
+/* Fine Gold: a full-bleed shot on velvet, like a jeweller's photo */
+.goldArt {
+  object-fit: cover;
+  border-radius: calc(var(--radius) - 6px);
+  -webkit-mask-image: none;
+  mask-image: none;
+  box-shadow: inset 0 0 0 1px rgba(229, 181, 74, 0.35);
+}
+
+.shop:hover .goldArt,
+.feature:hover .goldArt {
+  animation: none;
+}

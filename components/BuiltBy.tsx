@@ -111,7 +111,7 @@ export default function BuiltBy() {
             <p className={styles.bio}>
               I&rsquo;m <strong>{a.name}</strong>. For over eight years I&rsquo;ve built online stores on <strong>Shopify</strong>,{" "}
               <strong>Magento 2</strong> and <strong>PHP</strong> for brands in the UK, Australia, New Zealand and India. {brand.name} is a
-              storefront I designed and built end to end, from the 1,200-design catalog and animations to the virtual try-on. I design, code and
+              storefront I designed and built end to end, from the 2,700-design catalog and animations to the virtual try-on. I design, code and
               maintain each project myself.
             </p>
 

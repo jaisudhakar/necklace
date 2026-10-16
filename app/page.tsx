@@ -6,18 +6,19 @@ import Reveal from "@/components/Reveal";
 import { products, type Category } from "@/lib/products";
 import HeroStage from "./HeroStage";
 import { Bestsellers, NewArrivals, Newsletter, Stats } from "./home/HomeInteractive";
-import { Faq, GiftGuide, homeData, SectionHead, StyleTiles, Testimonials, TryOnPromo } from "./home/HomeSections";
+import { Faq, GiftGuide, GoldEdit, homeData, Lookbook, SectionHead, StyleTiles, Testimonials, TryOnPromo } from "./home/HomeSections";
 import home from "./home/home.module.css";
 import styles from "./page.module.css";
 
 /** Most popular generated design in a family. */
 const topOf = (c: Category) => products.filter((p) => p.category === c && !p.photo).sort((a, b) => a.trending - b.trending)[0];
 
-const heroSlugs = (["pendants", "lockets", "lariats", "coin-necklaces", "layered"] as Category[]).map((c) => topOf(c).slug);
+const heroSlugs = (["temple", "pendants", "cuban-links", "lockets", "mangalsutra", "layered"] as Category[]).map((c) => topOf(c).slug);
 const featured = (["pearl-strands", "chokers", "tennis", "collars"] as Category[]).map(topOf);
 
 const marquee = [
   "Handmade with love",
+  "Hallmarked 22K & solid 18K gold",
   "Hypoallergenic",
   "Free shipping, always",
   "Gift-ready packaging",
@@ -49,7 +50,7 @@ export default function Home() {
         <div className={styles.copy}>
           <span className={styles.kicker}>
             <span className={styles.kickerDot} aria-hidden />
-            New: Evil Eye &amp; Coin Collection
+            New: Fine Gold, temple to Cuban
           </span>
           <h1 className={styles.title}>
             <span className={styles.line}>{letters("Little charms.", 150)}</span>
@@ -93,7 +94,16 @@ export default function Home() {
       </section>
 
       <section className={`container ${home.section}`}>
-        <SectionHead kicker="Find your fit" title="Shop by style" href="/shop/" cta="All designs" />
+        <GoldEdit />
+      </section>
+
+      <section className={`container ${home.section}`}>
+        <SectionHead kicker="Lookbook · Try-on" title="Gold looks on our model" href="/try-on/" cta="Open the try-on" />
+        <Lookbook />
+      </section>
+
+      <section className={`container ${home.section}`}>
+        <SectionHead kicker="Find your fit" title="Everyday charms by style" href="/shop/" cta="All designs" />
         <StyleTiles />
       </section>
 

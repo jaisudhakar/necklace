@@ -16,6 +16,8 @@ type Props = {
   zoom?: number;
   /** Draw the soft display bust behind generated artwork. */
   bust?: boolean;
+  /** Use a jeweller's velvet bust (Fine Gold) instead of the soft white one. */
+  velvet?: boolean;
   className?: string;
   onFirstSwing?: () => void;
 };
@@ -33,6 +35,7 @@ export default function NecklaceSwing({
   filter,
   zoom = 1,
   bust = true,
+  velvet = false,
   className = "",
   onFirstSwing,
 }: Props) {
@@ -116,14 +119,18 @@ export default function NecklaceSwing({
             <svg className={styles.bust} viewBox="0 0 300 600" preserveAspectRatio="xMidYMin meet" aria-hidden>
               <defs>
                 {/* Fades out toward the shoulders so the bust never shows a hard edge */}
-                <linearGradient id="bustFill" gradientUnits="userSpaceOnUse" x1="-40" y1="0" x2="340" y2="0">
-                  <stop offset="0" stopColor="#fff" stopOpacity="0" />
-                  <stop offset=".3" stopColor="#fff" stopOpacity=".8" />
-                  <stop offset=".7" stopColor="#fff" stopOpacity=".8" />
-                  <stop offset="1" stopColor="#fff" stopOpacity="0" />
+                <linearGradient id={velvet ? "bustVelvet" : "bustFill"} gradientUnits="userSpaceOnUse" x1="-40" y1="0" x2="340" y2="0">
+                  <stop offset="0" stopColor={velvet ? "#3a0f1c" : "#fff"} stopOpacity="0" />
+                  <stop offset=".3" stopColor={velvet ? "#5b1a2b" : "#fff"} stopOpacity={velvet ? 1 : 0.8} />
+                  <stop offset=".5" stopColor={velvet ? "#6e2236" : "#fff"} stopOpacity={velvet ? 1 : 0.8} />
+                  <stop offset=".7" stopColor={velvet ? "#5b1a2b" : "#fff"} stopOpacity={velvet ? 1 : 0.8} />
+                  <stop offset="1" stopColor={velvet ? "#3a0f1c" : "#fff"} stopOpacity="0" />
                 </linearGradient>
               </defs>
-              <path d="M100 -40V30C100 50 82 58 54 66C10 78-50 100-120 150V600H420V150C350 100 290 78 246 66 218 58 200 50 200 30V-40Z" fill="url(#bustFill)" />
+              <path
+                d="M100 -40V30C100 50 82 58 54 66C10 78-50 100-120 150V600H420V150C350 100 290 78 246 66 218 58 200 50 200 30V-40Z"
+                fill={velvet ? "url(#bustVelvet)" : "url(#bustFill)"}
+              />
             </svg>
           )}
           <div ref={swingRef} className={styles.swing} style={{ transformOrigin: `${pivot.x * 100}% ${pivot.y * 100}%` }}>

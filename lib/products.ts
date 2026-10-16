@@ -40,11 +40,18 @@ export const giftBox = {
   image: img("gift-box"),
 };
 
-/** Shop filter chips: every necklace family. */
-export const categories: { id: "all" | Category; label: string }[] = [
+/** Shop filter chips: everything, the whole Fine Gold line, then every necklace family (gold first). */
+export type CategoryFilter = "all" | "fine-gold" | Category;
+export const categories: { id: CategoryFilter; label: string }[] = [
   { id: "all", label: "All" },
-  ...Object.values(STYLES).map((s) => ({ id: s.category, label: s.plural })),
+  { id: "fine-gold", label: "Fine Gold ✦" },
+  ...Object.values(STYLES)
+    .sort((a, b) => Number(!!b.gold) - Number(!!a.gold))
+    .map((s) => ({ id: s.category, label: s.plural })),
 ];
+
+export const matchesCategory = (p: Product, c: CategoryFilter) =>
+  c === "all" || (c === "fine-gold" ? !!p.gold : p.category === c);
 
 const bySlug = new Map(products.map((p) => [p.slug, p]));
 
@@ -65,5 +72,7 @@ export function relatedProducts(slug: string, count = 3) {
 }
 
 export const countBy = (category: Category) => products.filter((p) => p.category === category).length;
+
+export const goldProducts = products.filter((p) => p.gold);
 
 export const formatPrice = (n: number) => `$${n.toLocaleString("en-US")}`;

@@ -8,14 +8,41 @@ import styles from "./collections.module.css";
 
 export const metadata: Metadata = {
   title: "Collections",
-  description: "Lockets, pearl strands, coin & temple necklaces, layered sets, chokers and evil-eye charms.",
+  description: "Fine gold temple, bridal and chain edits, plus lockets, pearl strands, layered sets, chokers and evil-eye charms.",
 };
 
 const byTrend = (a: Product, b: Product) => a.trending - b.trending;
 const topOf = (pick: (p: Product) => boolean) => products.filter((p) => !p.photo && pick(p)).sort(byTrend).slice(0, 3);
 const motifCount = (m: MotifId) => products.filter((p) => p.design.motif === m).length;
 
+const ofStyles = (...ids: string[]) => (p: Product) => ids.includes(p.design.style);
+const goldCount = (pick: (p: Product) => boolean) => products.filter(pick).length;
+
 const collections: { title: string; kicker: string; text: string; href: string; tone: Tone; picks: Product[] }[] = [
+  {
+    title: "Temple & Bridal Gold",
+    kicker: `Fine Gold · ${goldCount(ofStyles("temple", "haram", "gold-choker"))} designs`,
+    text: "Hand-chased temple necklaces, mango-mala harams and bridal chokers in hallmarked 22K gold.",
+    href: "/shop/?category=temple",
+    tone: "peach",
+    picks: topOf(ofStyles("temple", "haram", "gold-choker")),
+  },
+  {
+    title: "Gold Chains",
+    kicker: `Fine Gold · ${goldCount(ofStyles("rope", "cuban", "paperclip", "herringbone", "figaro"))} designs`,
+    text: "Rope, Cuban, paperclip, herringbone and figaro chains in solid 18K gold, the most-searched chains this year.",
+    href: "/shop/?category=fine-gold",
+    tone: "lilac",
+    picks: topOf(ofStyles("cuban", "rope", "paperclip")),
+  },
+  {
+    title: "Mangalsutra & Malas",
+    kicker: `Fine Gold · ${goldCount(ofStyles("mangalsutra", "bead-mala"))} designs`,
+    text: "Modern mangalsutras for every day and hand-polished gold bead malas.",
+    href: "/shop/?category=mangalsutra",
+    tone: "pink",
+    picks: topOf(ofStyles("mangalsutra", "bead-mala")),
+  },
   {
     title: "The Locket Edit",
     kicker: `${countBy("lockets")} designs`,

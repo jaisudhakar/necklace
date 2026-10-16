@@ -3,7 +3,7 @@ import { ArrowRight, CubeIcon } from "@/components/Icons";
 import Reveal from "@/components/Reveal";
 import { MOODS, STYLES, type Design, type Mood } from "@/lib/design";
 import { artUri, necklaceGeometry } from "@/lib/necklaceArt";
-import { products, type Product } from "@/lib/products";
+import { countBy, getProduct, goldProducts, products, type Product } from "@/lib/products";
 import { PHOTO_MODEL as MODEL } from "@/lib/sampleModels";
 import { STYLE_FIT } from "@/lib/tryon";
 import styles from "./home.module.css";
@@ -60,7 +60,7 @@ export function StyleTiles() {
   const tones = ["pink", "mint", "peach", "lilac"] as const;
   return (
     <div className={styles.styleGrid}>
-      {Object.values(STYLES).map((s, i) => {
+      {Object.values(STYLES).filter((s) => !s.gold).map((s, i) => {
         const inFamily = necklaces.filter((p) => p.category === s.category && !p.photo);
         const hero = inFamily.sort(byTrend)[0];
         return (
@@ -84,11 +84,28 @@ const NECK = MODEL.neck ?? { x: MODEL.w / 2, y: MODEL.h * 0.48, left: MODEL.w * 
 const NECK_W = NECK.left + NECK.right;
 const NECK_MID = NECK.x + (NECK.right - NECK.left) / 2;
 const PROMO_DESIGNS: Design[] = [
+  { style: "temple", motif: "kasu", palette: "ruby" },
   { style: "pendant", motif: "evil-eye", palette: "sky" },
+  { style: "mangalsutra", motif: "solitaire", palette: "diamond" },
   { style: "locket", motif: "flower", palette: "blush" },
-  { style: "coin", motif: "teardrop", palette: "ruby" },
-  { style: "lariat", motif: "moon", palette: "crystal" },
 ];
+
+/** Positions a necklace image over the sample model so its chain ends sit at the sides of the neck. */
+function wearStyle(d: Design): React.CSSProperties {
+  const geo = necklaceGeometry(d);
+  // Chain ends span the neck, so the artwork is neck width ÷ the ends' share of its width.
+  const fit = STYLE_FIT[d.style];
+  const wPx = (NECK_W * (fit?.width ?? 1)) / (geo.ends[1].x - geo.ends[0].x);
+  const hPx = wPx / geo.ratio;
+  const y = NECK.y - (fit?.lift ?? 0) * NECK_W;
+  return {
+    left: `${((NECK_MID - wPx / 2) / MODEL.w) * 100}%`,
+    top: `${((y - geo.ends[0].y * hPx) / MODEL.h) * 100}%`,
+    width: `${(wPx / MODEL.w) * 100}%`,
+    transformOrigin: `50% ${geo.ends[0].y * 100}%`,
+    rotate: `${NECK.angle}rad`,
+  };
+}
 
 /** Necklaces cycling on the sample model, with a CTA into the try-on. */
 export function TryOnPromo() {
@@ -109,35 +126,110 @@ export function TryOnPromo() {
         <div className={styles.promoStage} style={{ aspectRatio: `${MODEL.w} / ${MODEL.h}` }} aria-hidden>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={MODEL.src} alt="" className={styles.promoModel} loading="lazy" />
-          {PROMO_DESIGNS.map((d, i) => {
-            const geo = necklaceGeometry(d);
-            // Chain ends span the neck, so the artwork is neck width ÷ the ends' share of its width.
-            const fit = STYLE_FIT[d.style];
-            const wPx = (NECK_W * (fit?.width ?? 1)) / (geo.ends[1].x - geo.ends[0].x);
-            const hPx = wPx / geo.ratio;
-            const y = NECK.y - (fit?.lift ?? 0) * NECK_W;
-            return (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={i}
-                src={artUri(d, { single: true })}
-                alt=""
-                className={styles.promoNecklace}
-                style={{
-                  left: `${((NECK_MID - wPx / 2) / MODEL.w) * 100}%`,
-                  top: `${((y - geo.ends[0].y * hPx) / MODEL.h) * 100}%`,
-                  width: `${(wPx / MODEL.w) * 100}%`,
-                  transformOrigin: `50% ${geo.ends[0].y * 100}%`,
-                  rotate: `${NECK.angle}rad`,
-                  animationDelay: `${i * 3}s, 0s`,
-                }}
-              />
-            );
-          })}
+          {PROMO_DESIGNS.map((d, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={i}
+              src={artUri(d, { single: true })}
+              alt=""
+              className={styles.promoNecklace}
+              style={{ ...wearStyle(d), animationDelay: `${i * 3}s, 0s` }}
+            />
+          ))}
           <span className={styles.promoScan} />
         </div>
         {MODEL.credit && <figcaption className={styles.promoCredit}>{MODEL.credit}</figcaption>}
       </figure>
+    </div>
+  );
+}
+
+/** The Fine Gold line: a velvet showcase with one tile per gold style. */
+export function GoldEdit() {
+  const goldStyles = Object.values(STYLES).filter((s) => s.gold);
+  return (
+    <div className={styles.gold}>
+      <span className={styles.goldGlow} aria-hidden />
+      <div className={styles.goldHead}>
+        <div>
+          <p className={styles.goldKicker}>New · Fine Gold</p>
+          <h2 className={styles.goldTitle}>The Fine Gold Edit</h2>
+          <p className={styles.goldText}>
+            {goldProducts.length.toLocaleString("en-US")} designs trending now: temple and bridal pieces in hallmarked 22K, rope,
+            Cuban, paperclip and figaro chains in solid 18K gold, set with diamonds, rubies, emeralds and kundan.
+          </p>
+        </div>
+        <div className={styles.goldCtas}>
+          <Link href="/shop/?category=fine-gold" className="btn">
+            Shop Fine Gold <ArrowRight size={24} />
+          </Link>
+          <Link href={`/try-on/?p=${LOOKS[0].slugs[0]}`} className={styles.goldGhost}>
+            Try gold on
+          </Link>
+        </div>
+      </div>
+      <div className={styles.goldGrid}>
+        {goldStyles.map((s, i) => {
+          const hero = goldProducts.filter((p) => p.category === s.category).sort(byTrend)[0];
+          return (
+            <Reveal key={s.category} delay={(i % 5) * 70}>
+              <Link href={`/shop/?category=${s.category}`} className={styles.goldTile} data-tilt>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={hero.image} alt="" loading="lazy" />
+                <span className={styles.goldName}>{s.plural}</span>
+                <span className={styles.goldCount}>{countBy(s.category)} designs</span>
+              </Link>
+            </Reveal>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const slugOf = (d: Design) => products.find((p) => p.design.style === d.style && p.design.motif === d.motif && p.design.palette === d.palette)!.slug;
+
+/** Ready-made looks on the sample model; each opens in the try-on (layered looks included). */
+const LOOKS = [
+  { title: "Festive temple", designs: [{ style: "temple", motif: "kasu", palette: "ruby" }] },
+  { title: "Bridal layers", designs: [{ style: "haram", motif: "paisley", palette: "emerald" }, { style: "gold-choker", motif: "lotus", palette: "kundan" }] },
+  { title: "Modern mangalsutra", designs: [{ style: "mangalsutra", motif: "solitaire", palette: "diamond" }] },
+  { title: "Bold Cuban", designs: [{ style: "cuban", motif: "heart", palette: "polished" }] },
+  { title: "Stacked chains", designs: [{ style: "paperclip", motif: "bar", palette: "diamond" }, { style: "herringbone", motif: "solitaire", palette: "polished" }] },
+  { title: "Peacock pendant", designs: [{ style: "rope", motif: "peacock", palette: "sapphire" }] },
+].map((l) => ({ ...l, designs: l.designs as Design[], slugs: (l.designs as Design[]).map(slugOf) }));
+
+/** A lookbook of gold pieces (and layered stacks) worn by the model, each one tap away from the try-on. */
+export function Lookbook() {
+  return (
+    <div className={styles.looks}>
+      {LOOKS.map((look, i) => {
+        const [main, ...rest] = look.slugs;
+        const href = `/try-on/?p=${main}${rest.length ? `&layers=${rest.join(",")}` : ""}`;
+        return (
+          <Reveal key={look.title} delay={(i % 3) * 90}>
+            <Link href={href} className={styles.look}>
+              <span className={styles.lookFrame} aria-hidden>
+                <span className={styles.lookStage} style={{ aspectRatio: `${MODEL.w} / ${MODEL.h}` }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={MODEL.src} alt="" className={styles.promoModel} loading="lazy" />
+                  {look.designs.map((d, j) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={j} src={artUri(d, { single: true })} alt="" className={styles.lookNecklace} style={wearStyle(d)} loading="lazy" />
+                  ))}
+                </span>
+              </span>
+              <span className={styles.lookBody}>
+                <span className={styles.lookTitle}>{look.title}</span>
+                <span className={styles.lookItems}>{look.slugs.map((s) => getProduct(s)!.name).join(" + ")}</span>
+                <span className={styles.lookCta}>
+                  <CubeIcon size={18} /> Try this look
+                </span>
+              </span>
+            </Link>
+          </Reveal>
+        );
+      })}
     </div>
   );
 }
@@ -151,11 +243,13 @@ const REVIEWS = [
   { name: "Sofia L.", text: "So many colours to pick from, I went with mint and I’m obsessed.", item: "Mint Clover Choker" },
   { name: "Hana T.", text: "The pearl strand sits perfectly with every neckline I own.", item: "Pearl Strand" },
   { name: "Grace O.", text: "Wore the tennis necklace to a wedding and felt like the main character.", item: "Tennis Necklace" },
+  { name: "Lakshmi V.", text: "Tried the temple necklace and the choker together on the try-on, then bought both for my wedding.", item: "Ruby Kasu Temple Necklace" },
+  { name: "Divya N.", text: "The mangalsutra is so modern I wear it to work every day. The hallmark card came in the box.", item: "Diamond Solitaire Mangalsutra" },
 ]
 
 /** Two rows of review cards drifting in opposite directions. */
 export function Testimonials() {
-  const rows = [REVIEWS.slice(0, 4), REVIEWS.slice(4)];
+  const rows = [REVIEWS.slice(0, 5), REVIEWS.slice(5)];
   return (
     <div className={styles.reviews}>
       {rows.map((row, r) => (
@@ -177,9 +271,9 @@ export function Testimonials() {
 
 const BANDS = [
   { id: "under-25", label: "Under $25", note: "Little thank-yous", tone: "mint", test: (p: number) => p < 25 },
-  { id: "25-35", label: "$25 – $35", note: "Best friend gifts", tone: "pink", test: (p: number) => p >= 25 && p <= 35 },
-  { id: "35-45", label: "$35 – $45", note: "Birthday sparkle", tone: "lilac", test: (p: number) => p > 35 && p <= 45 },
-  { id: "45-plus", label: "$45 & up", note: "Treat yourself", tone: "peach", test: (p: number) => p > 45 },
+  { id: "25-50", label: "$25 – $50", note: "Best friend gifts", tone: "pink", test: (p: number) => p >= 25 && p <= 50 },
+  { id: "50-700", label: "$50 – $700", note: "Everyday fine gold", tone: "lilac", test: (p: number) => p > 50 && p <= 700 },
+  { id: "700-plus", label: "$700 & up", note: "Bridal & heirloom", tone: "peach", test: (p: number) => p > 700 },
 ];
 
 /** Gift guide: price bands linking into the filtered shop. */
@@ -210,6 +304,10 @@ export function GiftGuide() {
 }
 
 const FAQS = [
+  {
+    q: "Is the Fine Gold line real gold?",
+    a: "Yes. Gold chains (rope, Cuban, paperclip, herringbone, figaro) are solid 18K gold; temple, bridal, haram, mangalsutra and bead mala pieces are hallmarked 22K gold, and every piece ships with its certificate.",
+  },
   {
     q: "Are your necklaces hypoallergenic?",
     a: "Yes. Every chain and clasp is nickel-free and lead-free, plated over surgical steel or sterling silver, so they're gentle on sensitive skin.",

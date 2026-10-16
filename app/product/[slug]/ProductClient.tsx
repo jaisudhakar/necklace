@@ -94,7 +94,7 @@ export default function ProductClient({ slug }: { slug: string }) {
             <ArrowLeft size={22} /> Back to Shop
           </Link>
 
-          <div ref={stageRef} className={`${styles.stage} tone-${product.tone} ${product.heroImage ? styles.stageHero : ""}`}>
+          <div ref={stageRef} className={`${styles.stage} tone-${product.tone} ${product.heroImage ? styles.stageHero : ""} ${product.gold ? styles.stageVelvet : ""}`}>
             <div className={styles.podium} aria-hidden />
             <div className={styles.orbs}>
               <FloatingOrbs
@@ -115,6 +115,7 @@ export default function ProductClient({ slug }: { slug: string }) {
                 ratio={viewRatio}
                 pivot={product.photo ? { x: 0.5, y: 0.02 } : { x: 0.5, y: geo.ends[0].y }}
                 bust={!product.photo}
+                velvet={product.gold}
                 filter={product.photo ? current.filter : undefined}
                 zoom={ZOOM_STEPS[zoomIdx]}
               />
