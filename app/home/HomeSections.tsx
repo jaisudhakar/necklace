@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, CubeIcon } from "@/components/Icons";
+import Ornament from "@/components/Ornament";
 import Reveal from "@/components/Reveal";
 import { MOODS, STYLES, type Design, type Mood } from "@/lib/design";
+import { occasionCover, OCCASIONS, signaturePieces, SIGNATURES } from "@/lib/heritage";
 import { artUri, necklaceGeometry } from "@/lib/necklaceArt";
 import { countBy, getProduct, goldProducts, products, type Product } from "@/lib/products";
 import { PHOTO_MODEL as MODEL } from "@/lib/sampleModels";
@@ -39,12 +41,26 @@ export const homeData = {
   ],
 };
 
-export function SectionHead({ kicker, title, href, cta }: { kicker: string; title: string; href?: string; cta?: string }) {
+export function SectionHead({
+  kicker,
+  title,
+  href,
+  cta,
+  center = true,
+}: {
+  kicker: string;
+  title: string;
+  href?: string;
+  cta?: string;
+  /** Centred with a lotus ornament (the default), or left-aligned. */
+  center?: boolean;
+}) {
   return (
-    <div className={styles.sectionHead}>
+    <div className={`${styles.sectionHead} ${center ? styles.sectionHeadCenter : ""}`}>
       <div>
         <p className={styles.kicker}>{kicker}</p>
         <h2 className={styles.sectionTitle}>{title}</h2>
+        {center && <Ornament className={styles.sectionOrnament} />}
       </div>
       {href && (
         <Link href={href} className={styles.viewAll}>
@@ -140,6 +156,60 @@ export function TryOnPromo() {
         </div>
         {MODEL.credit && <figcaption className={styles.promoCredit}>{MODEL.credit}</figcaption>}
       </figure>
+    </div>
+  );
+}
+
+/** Shop by occasion: temple-arch tiles, each opening the shop filtered to that occasion. */
+export function Occasions() {
+  return (
+    <div className={styles.occasions}>
+      {OCCASIONS.map((o, i) => {
+        const cover = occasionCover(o);
+        return (
+          <Reveal key={o.id} delay={i * 80}>
+            <Link href={`/shop/?occasion=${o.id}`} className={styles.occasion}>
+              <span className={styles.arch}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={cover.image} alt="" loading="lazy" />
+              </span>
+              <span className={styles.occasionName}>{o.label}</span>
+              <span className={styles.occasionText}>{o.text}</span>
+            </Link>
+          </Reveal>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Named signature collections, each with its three most-loved pieces. */
+export function Signatures() {
+  return (
+    <div className={styles.signatures}>
+      {SIGNATURES.map((c, i) => {
+        const pieces = signaturePieces(c);
+        return (
+          <Reveal key={c.name} delay={(i % 3) * 90}>
+            <Link href={c.href} className={styles.signature} data-tilt>
+              <span className={styles.signatureArt}>
+                {pieces.slice(0, 3).map((p, j) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={p.slug} src={p.image} alt="" loading="lazy" className={styles[`sig${j}`]} />
+                ))}
+              </span>
+              <span className={styles.signatureBody}>
+                <span className={styles.signatureKind}>{c.kind}</span>
+                <span className={styles.signatureName}>{c.name}</span>
+                <span className={styles.signatureText}>{c.text}</span>
+                <span className={styles.signatureCta}>
+                  Explore {pieces.length} designs <ArrowRight size={18} />
+                </span>
+              </span>
+            </Link>
+          </Reveal>
+        );
+      })}
     </div>
   );
 }

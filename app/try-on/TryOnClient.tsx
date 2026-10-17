@@ -301,7 +301,7 @@ export default function TryOnClient() {
     }
     ctx.drawImage(overlay, 0, 0);
     ctx.restore();
-    ctx.font = `700 ${Math.round(out.width / 26)}px "Playfair Display", Georgia, serif`;
+    ctx.font = `700 ${Math.round(out.width / 26)}px "Cormorant Garamond", Georgia, serif`;
     ctx.fillStyle = "rgba(255,255,255,.9)";
     ctx.textAlign = "right";
     ctx.fillText(`${brand.name} ♥`, out.width - out.width / 30, out.height - out.width / 30);

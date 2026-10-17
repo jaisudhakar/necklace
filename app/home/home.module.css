@@ -24,8 +24,20 @@
 }
 
 .sectionTitle {
-  font-size: clamp(2rem, 4vw, 3rem);
-  letter-spacing: -0.03em;
+  font-size: clamp(2.3rem, 4.4vw, 3.4rem);
+  letter-spacing: -0.01em;
+}
+
+/* Centred heritage heading: kicker, title, lotus ornament, then the link */
+.sectionHeadCenter {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.sectionOrnament {
+  margin-top: 12px;
 }
 
 .viewAll {
@@ -149,7 +161,7 @@
   border-radius: var(--radius-lg);
   background:
     radial-gradient(60% 90% at 90% 20%, rgba(255, 255, 255, 0.6), transparent 60%),
-    linear-gradient(135deg, #3d1233 0%, #8c2f5f 55%, #d9779f 100%);
+    linear-gradient(135deg, #3a0d16 0%, #8c2f5f 55%, #7d1530 100%);
   color: #fff;
   overflow: hidden;
   box-shadow: var(--shadow-lg);
@@ -251,7 +263,7 @@
   left: 0;
   right: 0;
   height: 30%;
-  background: linear-gradient(180deg, transparent, rgba(217, 119, 159, 0.25), transparent);
+  background: linear-gradient(180deg, transparent, rgba(125, 21, 48, 0.25), transparent);
   animation: scan 3.5s ease-in-out infinite;
 }
 
@@ -285,8 +297,8 @@
   top: 6px;
   bottom: 6px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #f0a6c0, var(--purple));
-  box-shadow: 0 8px 18px rgba(217, 119, 159, 0.35);
+  background: linear-gradient(135deg, #a52a45, var(--purple));
+  box-shadow: 0 8px 18px rgba(125, 21, 48, 0.35);
   transition:
     left 0.5s var(--ease-spring),
     width 0.5s var(--ease-spring);
@@ -1015,6 +1027,201 @@
   }
 
   .looks {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Shop by occasion: temple arches ---------- */
+
+.occasions {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.occasion {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+/* A temple arch: rounded top, gold frame with an inner rule */
+.arch {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  padding: 6px;
+  border-radius: 999px 999px 18px 18px;
+  background: linear-gradient(160deg, #f1d48a, #c9962b 45%, #8a6215);
+  box-shadow: var(--shadow);
+  transition: transform 0.45s var(--ease-spring), box-shadow 0.3s;
+}
+
+.arch::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 999px 999px 12px 12px;
+  box-shadow: inset 0 0 0 1px rgba(255, 243, 207, 0.55);
+  pointer-events: none;
+}
+
+.arch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--surface-solid);
+  border-radius: 999px 999px 13px 13px;
+  transition: transform 0.7s var(--ease-out);
+}
+
+.occasion:hover .arch {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+.occasion:hover .arch img {
+  transform: scale(1.04);
+}
+
+.occasionName {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--purple-strong);
+}
+
+.occasionText {
+  max-width: 220px;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- Signature collections ---------- */
+
+.signatures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.signature {
+  position: relative;
+  display: grid;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface-solid);
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 150, 43, 0.35),
+    var(--shadow);
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.45s var(--ease-spring), box-shadow 0.3s;
+}
+
+.signatureArt {
+  position: relative;
+  display: block;
+  height: 210px;
+  background: radial-gradient(90% 90% at 50% 15%, #5a2a35, #2a1016 60%, #12060a);
+}
+
+.signatureArt img {
+  position: absolute;
+  top: 18px;
+  width: 46%;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(241, 212, 138, 0.35);
+  transition: transform 0.6s var(--ease-spring);
+}
+
+.sig0 {
+  left: 27%;
+  z-index: 2;
+}
+
+.sig1 {
+  left: 6%;
+  transform: rotate(-8deg) scale(0.86);
+}
+
+.sig2 {
+  right: 6%;
+  transform: rotate(8deg) scale(0.86);
+}
+
+.signature:hover .sig0 {
+  transform: translateY(-6px) scale(1.04);
+}
+
+.signature:hover .sig1 {
+  transform: translateX(-10px) rotate(-12deg) scale(0.86);
+}
+
+.signature:hover .sig2 {
+  transform: translateX(10px) rotate(12deg) scale(0.86);
+}
+
+.signatureBody {
+  display: grid;
+  gap: 4px;
+  padding: 20px 22px 24px;
+}
+
+.signatureKind {
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.signatureName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.3rem;
+  line-height: 1;
+  color: var(--purple-strong);
+}
+
+.signatureText {
+  margin-top: 4px;
+  color: var(--ink-soft);
+}
+
+.signatureCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-weight: 800;
+  color: var(--purple);
+}
+
+@media (max-width: 1100px) {
+  .occasions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .signatures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .occasions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .occasionText {
+    display: none;
+  }
+
+  .signatures {
     grid-template-columns: 1fr;
   }
 }

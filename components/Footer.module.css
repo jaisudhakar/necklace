@@ -1,7 +1,57 @@
 .footer {
   margin-top: 96px;
-  border-top: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.45);
+  color: #f3dfb4;
+  background:
+    radial-gradient(60% 80% at 50% 0%, rgba(241, 212, 138, 0.12), transparent 70%),
+    linear-gradient(180deg, #5c0d22, #2a050e);
+}
+
+.footer > :global(.temple-band) {
+  background-color: #fbf5ea;
+}
+
+.trust {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  padding-block: 48px 36px;
+  text-align: center;
+}
+
+.trustIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  color: #3b0814;
+  font-size: 1.4rem;
+  background: radial-gradient(circle at 35% 30%, #fff3cf, #f1d48a 45%, #c9962b);
+  box-shadow: 0 0 0 4px rgba(241, 212, 138, 0.18);
+}
+
+.trustTitle {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.45rem;
+  color: #fff3dc;
+}
+
+.trustText {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: #d9bf98;
+}
+
+.ornament {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 760px) {
+  .trust {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .inner {
@@ -16,26 +66,25 @@
 .brand {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.5rem;
-}
-
-.brand span {
-  color: var(--heart);
+  font-size: 2rem;
+  color: #f6e3b0;
 }
 
 .note {
   margin-top: 6px;
-  color: var(--ink-soft);
+  color: #d9bf98;
 }
 
 .links {
   display: flex;
-  gap: 28px;
+  flex-wrap: wrap;
+  gap: 12px 28px;
   font-weight: 700;
 }
 
 .links a {
   position: relative;
+  white-space: nowrap;
 }
 
 .links a::after {
@@ -46,7 +95,7 @@
   bottom: -4px;
   height: 2px;
   border-radius: 2px;
-  background: var(--purple);
+  background: var(--gold-light);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.35s var(--ease-out);

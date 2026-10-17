@@ -103,8 +103,8 @@
   top: 0;
   height: 50px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #f0a6c0, var(--purple));
-  box-shadow: 0 10px 22px rgba(217, 119, 159, 0.35);
+  background: linear-gradient(135deg, #a52a45, var(--purple));
+  box-shadow: 0 10px 22px rgba(125, 21, 48, 0.35);
   transition:
     left 0.5s var(--ease-spring),
     width 0.5s var(--ease-spring);
@@ -230,7 +230,7 @@
   border-radius: 50%;
   box-shadow:
     0 0 0 2px #fff,
-    0 3px 8px rgba(140, 60, 100, 0.18);
+    0 3px 8px rgba(90, 35, 20, 0.18);
   transition: transform 0.35s var(--ease-spring), box-shadow 0.25s;
 }
 
@@ -243,7 +243,7 @@
   box-shadow:
     0 0 0 3px #fff,
     0 0 0 5px var(--purple),
-    0 4px 10px rgba(140, 60, 100, 0.25);
+    0 4px 10px rgba(90, 35, 20, 0.25);
   animation: pop 0.45s var(--ease-spring);
 }
 

@@ -201,7 +201,7 @@ a.itemName:hover {
 
 .trash:hover:not(:disabled) {
   color: #e2577c;
-  background: #fde4ec;
+  background: #f7e6e1;
   animation: wiggle 0.5s ease-in-out;
 }
 
@@ -286,7 +286,7 @@ a.itemName:hover {
 }
 
 .toggleInput:checked + .toggleTrack {
-  background: linear-gradient(135deg, #f0a6c0, var(--purple));
+  background: linear-gradient(135deg, #a52a45, var(--purple));
 }
 
 .toggleInput:checked + .toggleTrack .toggleKnob {

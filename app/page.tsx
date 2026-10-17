@@ -6,24 +6,35 @@ import Reveal from "@/components/Reveal";
 import { products, type Category } from "@/lib/products";
 import HeroStage from "./HeroStage";
 import { Bestsellers, NewArrivals, Newsletter, Stats } from "./home/HomeInteractive";
-import { Faq, GiftGuide, GoldEdit, homeData, Lookbook, SectionHead, StyleTiles, Testimonials, TryOnPromo } from "./home/HomeSections";
+import {
+  Faq,
+  GiftGuide,
+  GoldEdit,
+  homeData,
+  Lookbook,
+  Occasions,
+  SectionHead,
+  Signatures,
+  StyleTiles,
+  Testimonials,
+  TryOnPromo,
+} from "./home/HomeSections";
 import home from "./home/home.module.css";
 import styles from "./page.module.css";
 
 /** Most popular generated design in a family. */
 const topOf = (c: Category) => products.filter((p) => p.category === c && !p.photo).sort((a, b) => a.trending - b.trending)[0];
 
-const heroSlugs = (["temple", "pendants", "cuban-links", "lockets", "mangalsutra", "layered"] as Category[]).map((c) => topOf(c).slug);
-const featured = (["pearl-strands", "chokers", "tennis", "collars"] as Category[]).map(topOf);
+const heroSlugs = (["temple", "gold-chokers", "mangalsutra", "cuban-links", "harams", "rope-chains"] as Category[]).map((c) => topOf(c).slug);
+const featured = (["temple", "mangalsutra", "pendants", "paperclip-chains"] as Category[]).map(topOf);
 
 const marquee = [
-  "Handmade with love",
-  "Hallmarked 22K & solid 18K gold",
-  "Hypoallergenic",
-  "Free shipping, always",
-  "Gift-ready packaging",
-  "Little charms",
-  "Close to heart",
+  "BIS hallmarked 22K gold",
+  "Solid 18K gold chains",
+  "Lifetime exchange",
+  "Free insured shipping",
+  "Crafted by artisans",
+  "Little charms, close to heart",
 ];
 
 /** Letter-by-letter reveal: each character drops in on its own delay. */
@@ -46,22 +57,18 @@ const letters = (text: string, offset: number) =>
 export default function Home() {
   return (
     <div className="page-enter">
+      <div className={styles.heroBand}>
       <section className={`container ${styles.hero}`}>
         <div className={styles.copy}>
           <span className={styles.kicker}>
             <span className={styles.kickerDot} aria-hidden />
-            New: Fine Gold, temple to Cuban
+            New: The Fine Gold Edit
           </span>
           <h1 className={styles.title}>
-            <span className={styles.line}>{letters("Little charms.", 150)}</span>
-            <span className={`${styles.line} ${styles.shine}`}>
-              {letters("Close to heart.", 650)}
-              <span className={styles.titleHeart} aria-hidden>
-                ♥
-              </span>
-            </span>
+            <span className={styles.line}>{letters("Heirlooms in gold,", 150)}</span>
+            <span className={`${styles.line} ${styles.shine}`}>{letters("for every celebration.", 650)}</span>
           </h1>
-          <p className={styles.lede}>Handmade necklaces for every neckline.</p>
+          <p className={styles.lede}>Hallmarked temple and bridal gold, solid 18K chains and everyday charms. Try any piece on before you buy.</p>
           <div className={styles.ctaRow}>
             <Link href="/shop/" className="btn">
               Shop Now <ArrowRight size={24} />
@@ -74,6 +81,8 @@ export default function Home() {
 
         <HeroStage slugs={heroSlugs} />
       </section>
+      <div className="temple-band" aria-hidden />
+      </div>
 
       <section className={`container ${styles.featured}`} aria-label="Featured necklaces">
         {featured.map((p, i) => (
@@ -94,7 +103,17 @@ export default function Home() {
       </section>
 
       <section className={`container ${home.section}`}>
+        <SectionHead kicker="Shop by occasion" title="For every moment" />
+        <Occasions />
+      </section>
+
+      <section className={`container ${home.section}`}>
         <GoldEdit />
+      </section>
+
+      <section className={`container ${home.section}`}>
+        <SectionHead kicker="Signature collections" title="Stories in gold" href="/collections/" cta="All collections" />
+        <Signatures />
       </section>
 
       <section className={`container ${home.section}`}>
@@ -127,7 +146,7 @@ export default function Home() {
 
       <section className={home.section}>
         <div className="container">
-          <SectionHead kicker="Kind words" title="Little notes from happy ears" />
+          <SectionHead kicker="Kind words" title="From our families" />
         </div>
         <Testimonials />
       </section>
@@ -139,10 +158,10 @@ export default function Home() {
 
       <section className={`container ${styles.perks}`}>
         {[
-          { icon: <LeafIcon size={28} />, title: "Kind to ears", text: "Nickel-free, hypoallergenic posts on every pair.", tone: "mint" },
-          { icon: <GiftIcon size={28} />, title: "Ready for gifting", text: "Every order arrives in a little keepsake box.", tone: "pink" },
-          { icon: <TruckIcon size={28} />, title: "Free shipping", text: "On all orders, always. No minimums, no fuss.", tone: "lilac" },
-          { icon: <HeartIcon size={28} />, title: "Made by hand", text: "Small batches, assembled with care in our studio.", tone: "peach" },
+          { icon: <LeafIcon size={28} />, title: "BIS hallmarked", text: "Every gold piece is hallmarked and comes with its certificate.", tone: "mint" },
+          { icon: <GiftIcon size={28} />, title: "Velvet heirloom box", text: "Every order arrives gift-ready in our signature box.", tone: "pink" },
+          { icon: <TruckIcon size={28} />, title: "Insured shipping", text: "Free, fully insured delivery on every order.", tone: "lilac" },
+          { icon: <HeartIcon size={28} />, title: "Lifetime exchange", text: "Exchange or upgrade your gold at today's rate.", tone: "peach" },
         ].map((perk, i) => (
           <Reveal key={perk.title} delay={i * 90} className={`${styles.perk} tone-${perk.tone}`}>
             <span className={styles.perkIcon}>{perk.icon}</span>
@@ -155,7 +174,7 @@ export default function Home() {
       <section className={`container ${home.section}`}>
         <div className={home.split}>
           <div>
-            <SectionHead kicker="Questions" title="Good to know" />
+            <SectionHead kicker="Questions" title="Good to know" center={false} />
             <Faq />
           </div>
           <div className={home.club}>

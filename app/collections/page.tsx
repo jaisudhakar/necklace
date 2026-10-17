@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "@/components/Icons";
 import Reveal from "@/components/Reveal";
 import type { MotifId } from "@/lib/design";
+import { signaturePieces, SIGNATURES } from "@/lib/heritage";
 import { countBy, products, type Category, type Product, type Tone } from "@/lib/products";
 import styles from "./collections.module.css";
 
@@ -15,34 +16,16 @@ const byTrend = (a: Product, b: Product) => a.trending - b.trending;
 const topOf = (pick: (p: Product) => boolean) => products.filter((p) => !p.photo && pick(p)).sort(byTrend).slice(0, 3);
 const motifCount = (m: MotifId) => products.filter((p) => p.design.motif === m).length;
 
-const ofStyles = (...ids: string[]) => (p: Product) => ids.includes(p.design.style);
-const goldCount = (pick: (p: Product) => boolean) => products.filter(pick).length;
 
 const collections: { title: string; kicker: string; text: string; href: string; tone: Tone; picks: Product[] }[] = [
-  {
-    title: "Temple & Bridal Gold",
-    kicker: `Fine Gold · ${goldCount(ofStyles("temple", "haram", "gold-choker"))} designs`,
-    text: "Hand-chased temple necklaces, mango-mala harams and bridal chokers in hallmarked 22K gold.",
-    href: "/shop/?category=temple",
-    tone: "peach",
-    picks: topOf(ofStyles("temple", "haram", "gold-choker")),
-  },
-  {
-    title: "Gold Chains",
-    kicker: `Fine Gold · ${goldCount(ofStyles("rope", "cuban", "paperclip", "herringbone", "figaro"))} designs`,
-    text: "Rope, Cuban, paperclip, herringbone and figaro chains in solid 18K gold, the most-searched chains this year.",
-    href: "/shop/?category=fine-gold",
-    tone: "lilac",
-    picks: topOf(ofStyles("cuban", "rope", "paperclip")),
-  },
-  {
-    title: "Mangalsutra & Malas",
-    kicker: `Fine Gold · ${goldCount(ofStyles("mangalsutra", "bead-mala"))} designs`,
-    text: "Modern mangalsutras for every day and hand-polished gold bead malas.",
-    href: "/shop/?category=mangalsutra",
-    tone: "pink",
-    picks: topOf(ofStyles("mangalsutra", "bead-mala")),
-  },
+  ...SIGNATURES.map((c, i) => ({
+    title: c.name,
+    kicker: `${c.kind} · ${signaturePieces(c).length} designs`,
+    text: c.text,
+    href: c.href,
+    tone: (["peach", "pink", "lilac", "mint"] as const)[i % 4],
+    picks: signaturePieces(c).slice(0, 3),
+  })),
   {
     title: "The Locket Edit",
     kicker: `${countBy("lockets")} designs`,
@@ -116,7 +99,7 @@ export default function CollectionsPage() {
         <h1 className={styles.title}>
           Collections <span aria-hidden>✦</span>
         </h1>
-        <p className={styles.subtitle}>Find the necklace that matches your mood.</p>
+        <p className={styles.subtitle}>Our signature gold collections, and everyday charms for every mood.</p>
       </header>
 
       <div className={styles.grid}>

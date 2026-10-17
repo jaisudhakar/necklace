@@ -23,6 +23,10 @@ The store name and tagline live in `lib/brand.ts`; the developer section in `lib
 
 `out/.htaccess` forces HTTPS (the camera try-on requires it), sets the 404 page, serves `.wasm` correctly, and adds compression and caching. Make sure the domain has SSL first (cPanel → SSL/TLS Status). `netlify.toml` is included for Netlify too.
 
+## Look and feel
+
+A heritage jeweller's look: temple maroon, antique gold and ivory, Cormorant Garamond headings, gold temple-arch borders (`.temple-band`) and lotus ornaments (`components/Ornament.tsx`) under section titles. A top strip (`components/GoldRateBar.tsx`) shows the live gold rate per gram (24K/22K/18K) from the free public feed at `api.gold-api.com`, fetched in the visitor's browser; if the feed can't be reached it shows only the store's promises. The home page adds **shop by occasion** (bridal, festive, daily wear, office wear, gifting; also a shop filter, `?occasion=`) in temple-arch frames, and **signature collections** (Devi, Rajkumari, Mangalyam, Nitya, Mayil, Kamalam) defined in `lib/heritage.ts`. Colours are design tokens at the top of `app/globals.css`.
+
 ## Pages
 
 | Route | What's there |

@@ -1,14 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Nunito, Playfair_Display } from "next/font/google";
+import { Cormorant_Garamond, Nunito } from "next/font/google";
 import { CartProvider } from "@/components/CartProvider";
 import Effects from "@/components/Effects";
+import GoldRateBar from "@/components/GoldRateBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Toast from "@/components/Toast";
 import { brand } from "@/lib/brand";
 import "./globals.css";
 
-const playfair = Playfair_Display({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display-serif" });
+const display = Cormorant_Garamond({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display-serif" });
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "600", "700", "800"], variable: "--font-nunito" });
 
 export const metadata: Metadata = {
@@ -23,14 +24,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fdf3f2",
+  themeColor: "#5c0d22",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${nunito.variable}`}>
+    <html lang="en" className={`${display.variable} ${nunito.variable}`}>
       <body>
         <CartProvider>
+          <GoldRateBar />
           <Header />
           <main>{children}</main>
           <Footer />

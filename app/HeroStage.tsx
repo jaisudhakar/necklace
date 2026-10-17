@@ -58,6 +58,7 @@ export default function HeroStage({ slugs }: { slugs: string[] }) {
         </circle>
       </svg>
 
+      <div className={styles.heroOrbs}>
       <FloatingOrbs
         orbs={[
           { kind: "pearl", size: 70, top: "6%", left: "4%", depth: 26 },
@@ -67,6 +68,7 @@ export default function HeroStage({ slugs }: { slugs: string[] }) {
           { kind: "pearl", size: 46, top: "34%", right: "20%", depth: 34 },
         ]}
       />
+      </div>
 
       <div className={styles.bustWrap} onPointerDown={() => setPaused(true)}>
         {/* Re-keying replays the "lowered into place" entrance for each design */}
@@ -76,6 +78,7 @@ export default function HeroStage({ slugs }: { slugs: string[] }) {
             alt={product.name}
             ratio={geo.ratio}
             pivot={{ x: 0.5, y: geo.ends[0].y }}
+            velvet={product.gold}
             onFirstSwing={() => setHintGone(true)}
           />
         </div>

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { ChevronDown } from "@/components/Icons";
 import { ShopCard } from "@/components/ProductCards";
 import { MOODS, MOTIFS, PALETTES, type Mood, type MotifId, type PaletteId } from "@/lib/design";
+import { getOccasion, OCCASIONS } from "@/lib/heritage";
 import { categories, matchesCategory, products, type CategoryFilter } from "@/lib/products";
 import styles from "./shop.module.css";
 
@@ -32,11 +33,12 @@ type Filters = {
   color: "all" | PaletteId;
   mood: "all" | Mood;
   price: "all" | PriceId;
+  occasion: string;
   q: string;
   sort: SortId;
 };
 
-const DEFAULTS: Filters = { category: "all", motif: "all", color: "all", mood: "all", price: "all", q: "", sort: "trending" };
+const DEFAULTS: Filters = { category: "all", motif: "all", color: "all", mood: "all", price: "all", occasion: "all", q: "", sort: "trending" };
 const PAGE = 24;
 
 const fmt = (n: number) => n.toLocaleString("en-US");
@@ -53,6 +55,7 @@ function readUrl(): Filters {
     color: pick("color", Object.keys(PALETTES), "all"),
     mood: pick("mood", MOODS.map((m) => m.id), "all"),
     price: pick("price", PRICE_BANDS.map((b) => b.id), "all"),
+    occasion: pick("occasion", OCCASIONS.map((o) => o.id), "all"),
     q: sp.get("q") ?? "",
     sort: pick("sort", sorts.map((s) => s.id), "trending"),
   };
@@ -124,6 +127,7 @@ export default function ShopClient() {
       if (f.motif !== "all" && p.design.motif !== f.motif) return false;
       if (f.color !== "all" && p.design.palette !== f.color) return false;
       if (f.mood !== "all" && p.mood !== f.mood) return false;
+      if (f.occasion !== "all" && !getOccasion(f.occasion)!.test(p)) return false;
       if (f.price !== "all") {
         const band = PRICE_BANDS.find((b) => b.id === f.price)!;
         if (p.price < band.min || p.price > band.max) return false;
@@ -162,9 +166,10 @@ export default function ShopClient() {
     f.motif !== "all" && { key: "motif" as const, label: `Motif: ${MOTIFS[f.motif].label}` },
     f.color !== "all" && { key: "color" as const, label: `Colour: ${PALETTES[f.color].name}` },
     f.mood !== "all" && { key: "mood" as const, label: `Mood: ${MOODS.find((m) => m.id === f.mood)!.label}` },
+    f.occasion !== "all" && { key: "occasion" as const, label: `Occasion: ${getOccasion(f.occasion)!.label}` },
     f.price !== "all" && { key: "price" as const, label: PRICE_BANDS.find((b) => b.id === f.price)!.label },
     f.q && { key: "q" as const, label: `“${f.q}”` },
-  ].filter(Boolean) as { key: "motif" | "color" | "mood" | "price" | "q"; label: string }[];
+  ].filter(Boolean) as { key: "motif" | "color" | "mood" | "occasion" | "price" | "q"; label: string }[];
 
   return (
     <div className={`container page-enter ${styles.shop}`}>
@@ -258,6 +263,18 @@ export default function ShopClient() {
             {(Object.keys(MOTIFS) as MotifId[]).map((m) => (
               <option key={m} value={m}>
                 {MOTIFS[m].label}
+              </option>
+            ))}
+          </select>
+          <ChevronDown size={18} />
+        </label>
+        <label className={styles.select}>
+          <span className="sr-only">Occasion</span>
+          <select value={f.occasion} onChange={(e) => update({ occasion: e.target.value })}>
+            <option value="all">Any occasion</option>
+            {OCCASIONS.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.label}
               </option>
             ))}
           </select>

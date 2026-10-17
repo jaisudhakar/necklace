@@ -56,7 +56,7 @@ export default function Effects() {
     if (prefersReducedMotion() || !matchMedia("(pointer: fine)").matches) return;
     let lastSpark = 0;
     const glyphs = ["✦", "✧", "·", "♥"];
-    const colors = ["#d9779f", "#f0a6c0", "#e5b54a", "#8fdcc4"];
+    const colors = ["#7d1530", "#a52a45", "#e5b54a", "#8fdcc4"];
 
     const onMove = (e: PointerEvent) => {
       const now = performance.now();

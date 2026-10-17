@@ -32,7 +32,7 @@
   color: var(--bb-text);
   background:
     radial-gradient(70% 60% at 100% 0%, rgba(90, 169, 255, 0.12), transparent 60%),
-    radial-gradient(60% 60% at 0% 100%, rgba(217, 119, 159, 0.14), transparent 60%),
+    radial-gradient(60% 60% at 0% 100%, rgba(125, 21, 48, 0.14), transparent 60%),
     var(--bb-bg);
   box-shadow: 0 30px 70px rgba(15, 21, 48, 0.35);
   isolation: isolate;
@@ -45,7 +45,7 @@
   z-index: -1;
   padding: 1.5px;
   border-radius: inherit;
-  background: linear-gradient(135deg, var(--bb-blue), #d9779f 45%, rgba(90, 169, 255, 0.25) 70%, #d9779f);
+  background: linear-gradient(135deg, var(--bb-blue), #7d1530 45%, rgba(90, 169, 255, 0.25) 70%, #7d1530);
   background-size: 200% 200%;
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -82,7 +82,7 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, #d9779f, var(--bb-blue), #8fdcc4, #d9779f);
+  background: conic-gradient(from 0deg, #7d1530, var(--bb-blue), #8fdcc4, #7d1530);
   animation: spin 6s linear infinite;
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
   mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));

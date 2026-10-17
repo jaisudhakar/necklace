@@ -3,39 +3,44 @@
    ========================================================================== */
 
 :root {
-  --ink: #3d1233;
-  --ink-soft: #6a4660;
-  --muted: #a48597;
-  --line: rgba(120, 100, 190, 0.12);
+  /* Heritage palette: temple maroon, antique gold and ivory */
+  --ink: #3a0d16;
+  --ink-soft: #6b3a40;
+  --muted: #a07f78;
+  --line: rgba(150, 100, 40, 0.2);
 
-  --bg: #fdf3f2;
-  --surface: rgba(255, 255, 255, 0.78);
-  --surface-solid: #fbf9ff;
+  --bg: #fbf5ea;
+  --surface: rgba(255, 252, 245, 0.86);
+  --surface-solid: #fffaf0;
 
-  --purple: #d9779f;
-  --purple-strong: #b04a7a;
-  --purple-soft: #fbe4ee;
-  --heart: #f8b59c;
-  --green: #4fc7a4;
-  --gold: #e5b54a;
+  /* Accent (kept under its old name so every component picks it up) */
+  --purple: #7d1530;
+  --purple-strong: #5c0d22;
+  --purple-soft: #f4e4cc;
+  --heart: #c9962b;
+  --green: #2f8f6b;
+  --gold: #c9962b;
+  --gold-light: #f1d48a;
+  --maroon-deep: #3b0814;
 
-  --pink: #fde4ec;
-  --mint: #dcf4ec;
-  --peach: #fee6dc;
-  --lilac: #ece4fc;
+  /* Card tones: warm creams instead of pastels */
+  --pink: #f6e5df;
+  --mint: #eeeedd;
+  --peach: #f8ead0;
+  --lilac: #f3e6e6;
 
   --radius-sm: 14px;
   --radius: 24px;
   --radius-lg: 32px;
 
-  --shadow-sm: 0 4px 14px rgba(140, 60, 100, 0.08);
-  --shadow: 0 14px 40px rgba(140, 60, 100, 0.12);
-  --shadow-lg: 0 24px 60px rgba(140, 60, 100, 0.2);
+  --shadow-sm: 0 4px 14px rgba(90, 35, 20, 0.08);
+  --shadow: 0 14px 40px rgba(90, 35, 20, 0.12);
+  --shadow-lg: 0 24px 60px rgba(90, 35, 20, 0.2);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --font-display: var(--font-display-serif), "Playfair Display", Georgia, serif;
+  --font-display: var(--font-display-serif), "Cormorant Garamond", Georgia, serif;
   --font-body: var(--font-nunito), "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --container: 1440px;
@@ -59,9 +64,9 @@ body {
   font-family: var(--font-body);
   color: var(--ink);
   background:
-    radial-gradient(1200px 600px at 85% -10%, #fde3ec 0%, transparent 60%),
+    radial-gradient(1200px 600px at 85% -10%, #f7e6e1 0%, transparent 60%),
     radial-gradient(900px 500px at -10% 30%, #fff1e3 0%, transparent 60%),
-    radial-gradient(900px 600px at 100% 90%, #f3eaff 0%, transparent 60%),
+    radial-gradient(900px 600px at 100% 90%, #f6ecd9 0%, transparent 60%),
     var(--bg);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
@@ -143,10 +148,12 @@ p {
   font-weight: 700;
   font-size: 1.35rem;
   color: #fff;
-  background: linear-gradient(135deg, #f0a6c0 0%, var(--purple) 50%, #c25e8a 100%);
+  background: linear-gradient(135deg, #9a1f3c 0%, var(--purple) 50%, #4f0b1c 100%);
   box-shadow:
-    0 12px 28px rgba(217, 119, 159, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 12px 28px rgba(125, 21, 48, 0.35),
+    inset 0 0 0 1.5px rgba(241, 212, 138, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.02em;
   overflow: hidden;
   isolation: isolate;
   transition:
@@ -168,8 +175,9 @@ p {
 .btn:hover {
   transform: translateY(-3px) scale(1.02);
   box-shadow:
-    0 18px 36px rgba(217, 119, 159, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 18px 36px rgba(125, 21, 48, 0.45),
+    inset 0 0 0 1.5px rgba(241, 212, 138, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .btn:active {
@@ -449,7 +457,7 @@ p {
   right: 0;
   z-index: 300;
   height: 3px;
-  background: linear-gradient(90deg, #e5b54a, var(--purple), #f0a6c0);
+  background: linear-gradient(90deg, #e5b54a, var(--purple), #a52a45);
   transform-origin: 0 50%;
   transform: scaleX(var(--progress, 0));
   pointer-events: none;
@@ -514,8 +522,8 @@ p {
   display: grid;
   place-items: center;
   background:
-    radial-gradient(60% 60% at 50% 40%, #fff 0%, transparent 70%),
-    linear-gradient(160deg, #fde3ec, #fdf3f2 60%, #f3eaff);
+    radial-gradient(60% 60% at 50% 40%, rgba(241, 212, 138, 0.22) 0%, transparent 70%),
+    linear-gradient(160deg, #5c0d22, #3b0814 60%, #24040c);
   transition:
     clip-path 0.8s cubic-bezier(0.7, 0, 0.2, 1),
     opacity 0.8s;
@@ -578,4 +586,48 @@ p {
     opacity: 1;
     transform: none;
   }
+}
+
+
+/* ==========================================================================
+   Heritage ornaments
+   ========================================================================== */
+
+.intro-name {
+  color: #f6e3b0 !important;
+}
+
+/* A repeating gold temple border (gopuram arches and dots) */
+.temple-band {
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='14' viewBox='0 0 36 14'%3E%3Cpath d='M0 13h36' stroke='%23c9962b' stroke-width='1.2'/%3E%3Cpath d='M4 13V8a5 5 0 0 1 10 0v5M22 13V8a5 5 0 0 1 10 0v5' fill='none' stroke='%23c9962b' stroke-width='1.2'/%3E%3Ccircle cx='9' cy='3' r='1.6' fill='%23c9962b'/%3E%3Ccircle cx='27' cy='3' r='1.6' fill='%23c9962b'/%3E%3Cpath d='M18 4l2 3-2 3-2-3z' fill='%23c9962b'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: center;
+  opacity: 0.85;
+}
+
+/* Lotus ornament between two gold rules, under section titles */
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: var(--gold);
+}
+
+.ornament::before,
+.ornament::after {
+  content: "";
+  width: min(110px, 22vw);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+
+.ornament::after {
+  background: linear-gradient(270deg, transparent, var(--gold));
+}
+
+.ornament svg {
+  width: 34px;
+  height: 18px;
 }
